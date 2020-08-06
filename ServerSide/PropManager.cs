@@ -1,10 +1,10 @@
-﻿using AltV.Net;
+using AltV.Net;
 using AltV.Net.EntitySync;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace IdentityRP
+namespace Ul.Core.Modules
 {
     public enum TextureVariation
     {
@@ -241,6 +241,7 @@ namespace IdentityRP
             }
         }
 
+        
         /// <summary>
         /// Get or set the current texture variation, use null to reset it to default.
         /// </summary>
@@ -296,6 +297,35 @@ namespace IdentityRP
                     return;
 
                 SetData("dynamic", value);
+            }
+        }
+
+        /// <summary>
+        /// set object properly on the ground
+        /// </summary>
+        public bool? OnGround
+        {
+            get
+            {
+                if (!TryGetData("onGround", out bool isOnGround))
+                    return false;
+
+                return isOnGround;
+            }
+            set
+            {
+                // if value is set to null, reset the data
+                if (value == null)
+                {
+                    SetData("onGround", null);
+                    return;
+                }
+
+                // No data changed
+                if (OnGround == value)
+                    return;
+
+                SetData("onGround", value);
             }
         }
 
@@ -459,29 +489,32 @@ namespace IdentityRP
         /// <summary>
         /// Create a new dynamic object.
         /// </summary>
+        /// <param name="type">Type of the object (2 Object, 4 Ped).</param>
         /// <param name="model">The object model name.</param>
         /// <param name="position">The position to spawn the object at.</param>
         /// <param name="rotation">The rotation to spawn the object at(degrees).</param>
         /// <param name="dimension">The dimension to spawn the object in.</param>
         /// <param name="isDynamic">(Optional): Set object dynamic or not.</param>
+        /// <param name="isOnGround">(Optional): Set object on ground.</param>
         /// <param name="frozen">(Optional): Set object frozen.</param>
         /// <param name="lodDistance">(Optional): Set LOD distance.</param>
         /// <param name="lightColor">(Optional): set light color.</param>
         /// <param name="onFire">(Optional): set object on fire(DOESN'T WORK PROPERLY YET!)</param>
         /// <param name="textureVariation">(Optional): Set object texture variation.</param>
         /// <param name="visible">(Optional): Set object visibility.</param>
-        /// <param name="streamRange">(Optional): The range that a player has to be in before the object spawns, default value is 400.</param>
+        /// <param name="streamRange">(Optional): The range that a player has to be in before the object spawns, default value is 100.</param>
         /// <returns>The newly created dynamic object.</returns>
-        public static Prop Create(
-            string model, Vector3 position, Vector3 rotation, int dimension = 0, bool? isDynamic = null, bool? placeObjectOnGroundProperly = false, bool? frozen = null, uint? lodDistance = null,
-            Rgb lightColor = null, bool? onFire = null, TextureVariation? textureVariation = null, bool? visible = null, uint streamRange = 520
+        public static Prop Create(ulong type,
+            string model, Vector3 position, Vector3 rotation, int dimension = 0, bool? isDynamic = null, bool? isOnGround = null, bool? frozen = null, uint? lodDistance = null,
+            Rgb lightColor = null, bool? onFire = null, TextureVariation? textureVariation = null, bool? visible = null, uint streamRange = 100
         )
         {
-            Prop obj = new Prop(position, dimension, streamRange, 2)
+            Prop obj = new Prop(position, dimension, streamRange, type)
             {
                 Rotation = rotation,
                 Model = model,
                 Dynamic = isDynamic ?? null,
+                OnGround = isOnGround ?? null,
                 Freeze = frozen ?? null,
                 LodDistance = lodDistance ?? null,
                 LightColor = lightColor ?? null,
