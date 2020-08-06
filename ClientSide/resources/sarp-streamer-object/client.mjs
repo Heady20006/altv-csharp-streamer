@@ -9,9 +9,6 @@ alt.onServer(
     if (currEntityData) {
       let data = currEntityData;
       if (data != undefined) {
-        alt.log(
-          `OBJECTSTREAMER -> OBJECT WITH TYPE: ${entityType} AND MODEL ${data.model} ADDED`
-        );
         objStreamer.addObject(
           +entityId,
           data.model,
@@ -38,21 +35,16 @@ alt.onServer(
 
 // when an object is streamed out
 alt.onServer("entitySync:remove", (entityId, entityType) => {
-  alt.log(`OBJECTSTREAMER -> OBJECT WITH TYPE: ${entityType} REMOVED`);
   objStreamer.removeObject(+entityId);
 });
 
 // when a streamed in object changes position data
 alt.onServer("entitySync:updatePosition", (entityId, entityType, position) => {
-  alt.log(`OBJECTSTREAMER -> OBJECT WITH TYPE: ${entityType} POSITION UPDATED`);
-
   objStreamer.setPosition(+entityId, position);
 });
 
 // when a streamed in object changes data
 alt.onServer("entitySync:updateData", (entityId, entityType, newEntityData) => {
-  alt.log(`OBJECTSTREAMER -> OBJECT WITH TYPE: ${entityType} DATA UPDATED`);
-
   if (newEntityData.hasOwnProperty("rotation"))
     objStreamer.setRotation(+entityId, newEntityData.rotation);
 
@@ -92,8 +84,5 @@ alt.onServer("entitySync:updateData", (entityId, entityType, newEntityData) => {
 
 // when a streamed in object needs to be removed
 alt.onServer("entitySync:clearCache", (entityId, entityType) => {
-  alt.log(
-    `OBJECTSTREAMER -> OBJECT WITH TYPE: ${entityType} CLEARED FROM CACHE`
-  );
   objStreamer.clearObject(+entityId);
 });
